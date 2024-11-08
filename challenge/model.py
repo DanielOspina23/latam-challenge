@@ -51,10 +51,11 @@ class DelayModel:
         """
 
         try:
-            data["period_day"] = data['Fecha-I'].apply(self.preprocessor.get_period_day)
-            data["high_season"] = data['Fecha-I'].apply(self.preprocessor.is_high_season)
-            data["min_diff"] = data.apply(self.preprocessor.get_min_diff, axis=1)
-            data['delay'] = np.where(data['min_diff'] > self._threshold_in_minutes, 1, 0)
+            if "Fecha-I" in data and "Fecha-O" in data:
+                data["period_day"] = data["Fecha-I"].apply(self.preprocessor.get_period_day)
+                data["high_season"] = data["Fecha-I"].apply(self.preprocessor.is_high_season)
+                data["min_diff"] = data.apply(self.preprocessor.get_min_diff, axis=1)
+                data["delay"] = np.where(data["min_diff"] > self._threshold_in_minutes, 1, 0)
 
             features = pd.concat([
                 pd.get_dummies(data['OPERA'], prefix='OPERA'),
@@ -69,6 +70,10 @@ class DelayModel:
         if target_column:
             target = data[target_column]
             return features[self.top_10_features], target
+
+        for column in self.top_10_features:
+            if column not in features.columns:
+                features[column] = 0
 
         return features[self.top_10_features]
 
@@ -93,7 +98,7 @@ class DelayModel:
         model.fit(x_train, y_train)
         y_pred = model.predict(x_test)
 
-        self._model = model
+        self.load_model(model)
 
         return classification_report(y_test, y_pred, output_dict=True), model
 
@@ -112,7 +117,9 @@ class DelayModel:
         """
 
         if self._model is None:
-            # TODO: Update model function
-            self._model = None
+            raise HTTPException(status_code=500, detail="There are no model in the bucket.")
 
-        return self._model.predict(features)
+        return self._model.predict(features).tolist()
+
+    def load_model(self, model):
+        self._model = model
