@@ -13,4 +13,10 @@ __pycache__/
 .coverage
 .coverage.*
 
+reports/
+
 .DS_Store
+
+poetry.lock
+
+credentials.json
