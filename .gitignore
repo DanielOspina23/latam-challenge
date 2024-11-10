@@ -18,3 +18,5 @@ reports/
 .DS_Store
 
 poetry.lock
+
+credentials.json
