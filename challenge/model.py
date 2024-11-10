@@ -116,7 +116,7 @@ class DelayModel:
 
         Args:
             features (pd.DataFrame): preprocessed data.
-        
+
         Returns:
             (List[int]): predicted targets.
         """

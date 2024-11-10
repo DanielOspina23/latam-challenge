@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile', '-t', 'us-east1-docker.pkg.dev/latam-challenge-ml-440920/latam-challenge-daniel-ospina/latam-challenge-daniel-ospina:latest', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-east1-docker.pkg.dev/latam-challenge-ml-440920/latam-challenge-daniel-ospina/latam-challenge-daniel-ospina:latest']
